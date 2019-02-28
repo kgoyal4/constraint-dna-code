@@ -1,3 +1,21 @@
+/*
+   Input: DNA code length n, GC-weight w, minimum distance d
+Output: number of vaild DNA codewords
+1 Generate all vaild codewords over quaternary alphabets
+{G, A, C, T} such that no two bases can repeat more than three times consecutively.
+2 Remove the codewords from the list above that do not
+have GC-weight w. The number of such codewords is given
+in Theorem 1.
+3 For each codeword in the list, count all the codewords at
+distance d − 1 in a sphere.
+4 Remove the codeword with a maximum number of codewords
+in radius d − 1. Reduce the number of codewords
+at distance d − 1 by 1 for all codewords that were within
+distance d − 1 of this removed codeword.
+5 Repeat the process in Step 4 till the maximum number
+of codewords within distance d − 1 is at most 1 for each
+element of the list.
+*/
 #include <bits/stdc++.h>
 using namespace std;
  struct Node{
