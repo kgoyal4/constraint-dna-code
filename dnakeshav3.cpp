@@ -1,20 +1,16 @@
 /*
-   Input: DNA code length n, GC-weight w, minimum distance d
-Output: number of vaild DNA codewords
-1 Generate all vaild codewords over quaternary alphabets
-{G, A, C, T} such that no two bases can repeat more than three times consecutively.
-2 Remove the codewords from the list above that do not
-have GC-weight w. The number of such codewords is given
-in Theorem 1.
-3 For each codeword in the list, count all the codewords at
-distance d − 1 in a sphere.
-4 Remove the codeword with a maximum number of codewords
-in radius d − 1. Reduce the number of codewords
-at distance d − 1 by 1 for all codewords that were within
-distance d − 1 of this removed codeword.
-5 Repeat the process in Step 4 till the maximum number
-of codewords within distance d − 1 is at most 1 for each
-element of the list.
+ Algorithm 1: Altruistic Algorithm to Generate DNA Codewords
+Input: DNA code length n, GC-weight w, minimum distance d
+Output: Altruistic DNA codebook
+1 Generate all valid codewords over A/G/C/T such that no base repeat more than
+three times consecutively and having GC-weight w.
+2 For each codeword in the list, count all the codewords at distance d − 1 in a sphere.
+3 Remove the codeword with a maximum number of codewords in radius d − 1. Reduce the number of codewords
+at distance d − 1 by 1 for all codewords that were within distance d − 1 of this removed codeword.
+4 Repeat the process in Step3 till the maximum number of codewords within distance d − 1
+is at most 1 for each element of the list.
+5 Add those removed codewords in codebook which are at distance greater than d-1
+with all codewords in codebook.    
 */
 #include <bits/stdc++.h>
 using namespace std;
@@ -53,7 +49,7 @@ void generateword(vector< pair <string, pair <long,Node*> > > &vec,char arr[], s
             generateword(vec,arr, newPrefix, m, n - 1, w);
     }   
 }
-int distance(string a, string b, int n,int d){
+int distance(string a, string b, int n){
     int dis = 0;
     for(int i = 0; i < n; i++)
     if(a[i]!=b[i])
@@ -70,7 +66,7 @@ Node* newNode(long data)
 void atdistance(vector< pair <string, pair <long,Node*> > > &vec,int n,int d){
     for(long i=0;i<vec.size();i++){
         for(long j=i+1;j<vec.size();j++){
-            int dist = distance(vec[i].first,vec[j].first,n,d);
+            int dist = distance(vec[i].first,vec[j].first,n);
             if(dist<d&&dist>0){
                 vec[i].second.first++;
                 vec[j].second.first++;
@@ -94,7 +90,7 @@ void atdistance(vector< pair <string, pair <long,Node*> > > &vec,int n,int d){
         }
     }
 }
-void deletemax(vector< pair <string, pair <long,Node*> > > &vec,ofstream &output,int n,int w,int d){
+void deletemax(vector< pair <string, pair <long,Node*> > > &vec,vector< pair <string, pair <long,Node*> > > &vecm,int n,int d,int w,ofstream &output){
     while(true){
          long max=vec[0].second.first,x=0;
               for(int i=1;i<vec.size();i++)
@@ -114,12 +110,28 @@ void deletemax(vector< pair <string, pair <long,Node*> > > &vec,ofstream &output
         }
         vec[x].second.first= -1;
     }
-    output<<"Number of Vaild Codewords("<<n<<","<<w<<") : "<<vec.size()<<"    ";
-      long ans=0;
+    output<<"Number of Vaild Codewords("<<n<<","<<w<<") : "<<vec.size()<<endl;
   for(int i=0;i<vec.size();i++)
         if(vec[i].second.first!=-1)
-			     ans++;
-    output<<"Number of Vaild Codewords("<<n<<","<<d<<","<<w<<"): "<<ans<<endl;
+			vecm.push_back(vec[i]);
+	for(int i=0;i<vec.size();i++)
+		{
+			int f=0;
+			for(int j=0;j<vecm.size();j++)
+			{
+				 if((vec[i].second.first==0)||(vec[i].second.first==-1)&&(distance(vec[i].first,vecm[j].first,n)<d))
+				  {
+				      f=1;
+					  break;	
+				  }	
+			}
+			if(f==0)
+			{
+			    vec[i].second.first=0;
+			   vecm.push_back(vec[i]);
+		    }
+		}
+		  output<<"Number of Vaild Codewords("<<n<<","<<w<<","<<d<<") : "<<vecm.size()<<endl;
  }
 int main()
  {
@@ -140,11 +152,12 @@ int main()
 		}
           w = n/2;
         vector< pair <string, pair <long,Node*> > > vec;
+        vector< pair <string, pair <long,Node*> > > vecm;
           generateword(vec,arr, "", 4, n, w);
           atdistance(vec,n, d);
-          deletemax(vec,output,n,w,d);
+          deletemax(vec,vecm,n,d,w,output);
     }
-    input.close();
+     input.close();
     output.close();
     return 0;
 }
