@@ -137,8 +137,8 @@ int main()
  {
    ifstream input;
    ofstream output;
-   input.open("input.txt");
-   output.open("output.txt");
+   input.open("input.txt"); //add input file location
+   output.open("output.txt"); //add output file location
     char arr[] = {'G', 'A', 'C', 'T'};
     int d, n, w;
     int t;
