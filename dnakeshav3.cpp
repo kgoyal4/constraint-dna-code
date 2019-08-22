@@ -1,5 +1,5 @@
 /*
- Algorithm 1: Altruistic Algorithm to Generate DNA Codewords
+ Algorithm : Altruistic Algorithm to Generate DNA Codewords with runlength constraint atmost three. 
 Input: DNA code length n, GC-weight w, minimum distance d
 Output: Altruistic DNA codebook
 1 Generate all valid codewords over A/G/C/T such that no base repeat more than
